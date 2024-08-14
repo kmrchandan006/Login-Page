@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const bcrypt = require('bcrypt');
 const path = require('path');
 
 // Initialize Express app
@@ -33,7 +34,7 @@ app.get('/', (req, res) => {
 // Password validation function
 function validatePassword(password) {
   const regex = /^[A-Z]/; // Password must start with a capital letter
-  return regex.test(password);
+  return regex.test(password) && password.length >= 6;
 }
 
 // Handle registration and login submission
@@ -42,7 +43,7 @@ app.post('/login', async (req, res) => {
 
   // Validate the password
   if (!validatePassword(password)) {
-    return res.send('Password must start with a capital letter.');
+    return res.send('Password must start with a capital letter and be at least 6 characters long.');
   }
 
   try {
@@ -50,15 +51,17 @@ app.post('/login', async (req, res) => {
     const foundUser = await User.findOne({ username: loginUser });
 
     if (foundUser) {
-      // If user exists, check if the password matches
-      if (foundUser.password === password) {
+      // If user exists, compare the entered password with the stored hash
+      const isMatch = await bcrypt.compare(password, foundUser.password);
+      if (isMatch) {
         res.send('Login successful!');
       } else {
         res.send('Invalid password.');
       }
     } else {
-      // If user does not exist, create a new user with the provided credentials
-      const newUser = new User({ username: loginUser, password: password });
+      // If user does not exist, hash the password and store it in the database
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const newUser = new User({ username: loginUser, password: hashedPassword });
       await newUser.save();
       res.send('Registration successful! You can now log in.');
     }
