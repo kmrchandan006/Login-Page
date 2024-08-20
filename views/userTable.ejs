@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Data</title>
+    <link rel="stylesheet" href="/style1.css">
+</head>
+<body>
+    <div class="wrapper">
+        <h2>User Information</h2>
+        <table border="1" cellpadding="10" cellspacing="0">
+            <tr>
+                <th>Username</th>
+                <th>Password (Hashed)</th>
+            </tr>
+            <tr>
+                <td><%= user.username %></td>
+                <td><%= user.password %></td>
+            </tr>
+        </table>
+        <a href="/">Go Back to Login</a>
+    </div>
+</body>
+</html>

@@ -7,21 +7,19 @@ const authRoutes = require('./routes/authRoutes');
 // Initialize Express app
 const app = express();
 
+// Set EJS as the template engine
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
-
 
 // Connect to MongoDB
 connectDB();
 
 // Routes
 app.use('/', authRoutes);
-
-// Serve the HTML form
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
 
 // Start the server
 app.listen(3000, () => {
